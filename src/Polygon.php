@@ -1,8 +1,5 @@
 <?php namespace Rvwoens\Geometry;
-
-
 use Exception;
-
 
 /**
  * Polygon class. Basically a set of Coords (at least 3, a triangle)
@@ -14,7 +11,7 @@ use Exception;
  * @since 20-04-2020.
  */
 class Polygon {
-    private $poly=[];   // smallest poly is a triangle!  // must be public for serialization (see PolygonTypeAdapter)
+    private $poly=[];   // smallest poly is a triangle!
 
 	/**
 	 * Polygon constructor.
@@ -84,17 +81,24 @@ class Polygon {
         }
     }
 
-
+	/**
+	 * a valid polygon contains at least 2 vertices
+	 * @return bool
+	 */
     public function valid() {
         return count($this->poly)>2;
     }
 
+	/**
+	 * size as defined by the number of vertics
+	 * @return int
+	 */
     public function size() {
         return count($this->poly);
     }
 
 	/**
-	 * Format the polygon into a string 51.3,5.3|51.4,6.5|...
+	 * Format the polygon into a serialisation string 51.3,5.3|51.4,6.5|...
 	 * @return string
 	 */
     public function polyString() {
@@ -122,6 +126,10 @@ class Polygon {
         return $rv;
     }
 
+	/**
+	 * Format into a GeoJson structure (not a json string, but a php array)
+	 * @return array - php array representing the geoJson structure
+	 */
     public function polyGeoJsonArray() {
         $coords = [];
         foreach ($this->poly as $coord) {
@@ -139,17 +147,34 @@ class Polygon {
         ];
         return $rv;
     }
+
+	/**
+	 * Convert to a GeoJson string. Option for pretty-printing the string repr.
+	 * @param bool $pretty
+	 * @return false|string
+	 */
     public function polyGeoJsonString($pretty=false) {
 		return json_encode($this->polyGeoJsonArray(), $pretty? JSON_PRETTY_PRINT : 0);
     }
+
+	/**
+	 * Convert to a Lat - Lng array  [ ['lat'=>...,'lng'=>...] ... ]
+	 * @return array
+	 */
     public function polyLatLngArray() {
         $rv = [];
-        foreach ($this->poly as $coord) {
+        /** @var Coord $coord */
+		foreach ($this->poly as $coord) {
             $rv[]= [ 'lat'=>$coord->latitude, 'lng'=>$coord->longitude ];
         }
         return $rv;
     }
 
+	/**
+	 * Two polygons are equal when each vertex is within approx 10 cm
+	 * @param $other
+	 * @return bool
+	 */
     public function equals($other) {
         if (is_null($other)) return false;
         if ($other == $this) return true;
@@ -158,7 +183,7 @@ class Polygon {
     }
 
     /**
-     * fast function to determine "far" away from polygon
+     * fast function to determine "far" away from polygon to avoid complex 'contains' calculation
      * @param $c
      * @return
      */
@@ -167,9 +192,9 @@ class Polygon {
     }
 
     /**
-     * Does the poly contain a point
-     * @param point
-     * @return
+     * Does the poly contain a coordinate
+     * @param Coord point
+     * @return bool
      */
     public function contains(Coord $point) {
         if (!$this->valid()) {
@@ -190,7 +215,7 @@ class Polygon {
     /**
      * Signed area of polygon in square 100m2 (needed for center) (can be negative dep. on CW / CCW )
      * Note: 1 lat/long degree is about 100km. So the result is in square 100km. Use ringarea to get meters
-     * @return
+     * @return double
      */
     public function  signedArea()  {
         // https://en.wikipedia.org/wiki/Shoelace_formula
