@@ -1,0 +1,24 @@
+{
+    "name": "rvwoens/geometry",
+    "description": "Geometry 2D shapes helper functions",
+    "type": "library",
+    "require": {
+        "php": "^7.*"
+    },
+    "license": "MIT",
+    "keywords": [
+        "library",
+        "geometry"
+    ],
+    "authors": [
+        {
+            "name": "Ronald van Woensel",
+            "email": "rvw@cosninix.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "rvwoens\\geometry\\": "src/"
+        }
+    }
+}
