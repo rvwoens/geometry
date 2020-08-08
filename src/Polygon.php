@@ -356,9 +356,8 @@ class Polygon {
 		$expandedPoly=[];
 
         for ($i = 0; $i < count($this->poly) ; $i++) {
-            $bearing=$center->bearing($this->poly[$i]);   // from center towards pI
-            $newPoint=Coord::copyOf($this->poly[$i]);         // make a COPY
-            $newPoint->move($expand, $bearing);   // move newpoint a bit further in this direction
+            $bearing=$center->bearing($this->poly[$i]);   					  // from center towards pI
+            $newPoint=$this->poly[$i]->movedClone($expand, $bearing);         // make a COPY and move
             $expandedPoly[]=$newPoint;
         }
         return new Polygon($expandedPoly);
