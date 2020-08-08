@@ -3,7 +3,7 @@
     "description": "Geometry 2D shapes helper functions",
     "type": "library",
     "require": {
-        "php": "^7.*"
+        "php": "^7.0.0"
     },
     "license": "MIT",
     "keywords": [
