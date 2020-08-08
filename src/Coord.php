@@ -23,14 +23,12 @@ class Coord {
 		$this->longitude = $lon;
 	}
 
-	public static function copyOf($copyOf) {
-		return new static($copyOf->latitude, $copyOf->longitude);
+	public function clone() {
+		return new static($this->latitude, $this->longitude);
 	}
 
-	public static function copyMoved(Coord $copyOf, $distance, $bearing) {
-		$new = static::copyOf($copyOf);
-		$new->move($distance, $bearing);
-		return $new;
+	public function movedClone($distance, $bearing) {
+		return $this->clone()->move($distance, $bearing);
 	}
 
 	public function toString() {

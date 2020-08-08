@@ -243,13 +243,6 @@ class Polygon {
 		return $area * 6378137 * 6378137 / 2;
 	}
 
-	/**
-	 * Figure out what index to use in the ringArea calculation
-	 */
-	private function determineCoordinateIndices($index, $length) {
-
-	}
-
     /**
      * real area is always positive
      * @return
