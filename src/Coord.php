@@ -1,4 +1,4 @@
-<?php namespace Cosninix\Geometry;
+<?php namespace Rvwoens\Geometry;
 
 /**
  *

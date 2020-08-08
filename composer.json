@@ -1,5 +1,5 @@
 {
-    "name": "cosninix/geometry",
+    "name": "rvwoens/geometry",
     "description": "Geometry 2D shapes helper functions",
     "type": "library",
     "require": {
@@ -18,7 +18,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Cosninix\\Geometry\\": "src/"
+            "Rvwoens\\Geometry\\": "src/"
         }
     }
 }
