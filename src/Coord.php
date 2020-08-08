@@ -2,7 +2,7 @@
 
 /**
  *
- * a basic coordinate
+ * a basic coordinate with latitude and longitude only
  * @author rvw
  * @version 1.0
  * @since 17-04-2020.
