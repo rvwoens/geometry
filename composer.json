@@ -28,6 +28,8 @@
         "psr-4": {
             "Rvwoens\\Geometry\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
-
 }
