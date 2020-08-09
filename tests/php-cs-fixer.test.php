@@ -17,7 +17,7 @@ namespace A {
 	function foo() { return 0; }
 
 	/**
-     * 
+     *
 	 * barrrr
 	 * @param $x
 	 * @param $y
