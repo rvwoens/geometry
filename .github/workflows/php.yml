@@ -35,3 +35,10 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
+
+    - name: Run php-cs-fixer
+      run: composer run-script fix
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+          commit_message: Apply php-cs-fixer changes
