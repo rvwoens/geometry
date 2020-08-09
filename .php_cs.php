@@ -58,6 +58,7 @@ $rules = [
 ];
 
 $finder = Finder::create()
+    ->in(__DIR__)
     ->notPath('bootstrap/cache')
     ->notPath('storage')
     ->notPath('vendor')
@@ -68,7 +69,6 @@ $finder = Finder::create()
 
 return Config::create()->setRules($rules)
              ->setFinder($finder)
-             ->in(__DIR__)
              ->setUsingCache(false)
              ->setIndent("\t")
              ->setLineEnding("\n")
