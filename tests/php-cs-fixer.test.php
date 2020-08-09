@@ -17,7 +17,10 @@ namespace A {
 	function foo() { return 0; }
 
 	/**
+<<<<<<< HEAD
      *
+=======
+>>>>>>> 8107a96f4648811531d254f4931a98e3bdf21d9e
 	 * barrrr
 	 * @param $x
 	 * @param $y
