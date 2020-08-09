@@ -1,5 +1,5 @@
 # geometry
-
+[![GitHub Release](https://img.shields.io/github/v/tag/rvwoens/geometry.svg?style=flat)](//packagist.org/packages/rvwoens/geometry)
 [![GitHub Release](https://img.shields.io/packagist/v/rvwoens/geometry.svg?style=flat)](//packagist.org/packages/rvwoens/geometry)
 [![Total Downloads](https://poser.pugx.org/rvwoens/geometry/downloads)](//packagist.org/packages/rvwoens/geometry)
 [![License](https://poser.pugx.org/rvwoens/geometry/license)](//packagist.org/packages/rvwoens/geometry)
