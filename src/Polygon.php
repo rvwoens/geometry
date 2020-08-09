@@ -6,15 +6,11 @@ use Exception;
  * Polygon class. Basically a set of Coords (at least 3, a triangle)
  * Polygons close themselves: The last point is connected to the first.
  * Can be CCW or CW, does not matter. However can not contain holes etc.
- *
  * @author rvw
- *
  * @version 1.0
- *
  * @since 20-04-2020.
  */
-class Polygon
-{
+class Polygon {
 	private $poly = [];   // smallest poly is a triangle!
 
 	/**
@@ -36,12 +32,14 @@ class Polygon
 			if ($analyse instanceof Coord) {
 				// array of Coords. We like it!
 				$this->poly = $poly;
-			} elseif (is_array($analyse) && isset($analyse['lat'])) {
+			}
+			elseif (is_array($analyse) && isset($analyse['lat'])) {
 				// array of [[lat=>.. lng=>..][lat=> ]
 				foreach ($poly as $coord) {
 					$this->poly[] = new Coord($coord['lat'], $coord['lng']);
 				}
-			} elseif (is_array($analyse) && count($analyse) == 2) {
+			}
+			elseif (is_array($analyse) && count($analyse) == 2) {
 				// array of [ [lat,lng][lat,lng] ]
 				// or is it lng,lat
 				$test = $poly[0];
@@ -52,18 +50,22 @@ class Polygon
 				foreach ($poly as $coord) {
 					if ($llorder == 'lonlat') {
 						$this->poly[] = new Coord($coord[1], $coord[0]);
-					} else {
+					}
+					else {
 						$this->poly[] = new Coord($coord[0], $coord[1]);
 					}
 				}
-			} else {
+			}
+			else {
 				throw new Exception('Cant construct polygon');
 			}
-		} elseif (is_string($poly)) {
+		}
+		elseif (is_string($poly)) {
 			if (stripos($poly, 'polygon') !== false) {
 				// WKT POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
 				$this->poly = $this->wkt2polygon($poly);
-			} else {
+			}
+			else {
 				// format lat,lng|lat,lng|...
 				$aPoly = explode('|', $poly);
 				if (count($aPoly) < 3) {
@@ -79,7 +81,8 @@ class Polygon
 					throw new Exception('Polygon must have at least 3 points');
 				}
 			}
-		} else {
+		}
+		else {
 			throw new Exception('Cant construct polygon on this type');
 		}
 		// make sure to remove the "end" closing(s!) if it is exactly the same as the begin
@@ -90,7 +93,6 @@ class Polygon
 
 	/**
 	 * a valid polygon contains at least 2 vertices
-	 *
 	 * @return bool
 	 */
 	public function valid() {
@@ -99,7 +101,6 @@ class Polygon
 
 	/**
 	 * size as defined by the number of vertics
-	 *
 	 * @return int
 	 */
 	public function size() {
@@ -108,7 +109,6 @@ class Polygon
 
 	/**
 	 * Format the polygon into a serialisation string 51.3,5.3|51.4,6.5|...
-	 *
 	 * @return string
 	 */
 	public function polyString() {
@@ -124,7 +124,6 @@ class Polygon
 	 * Format into a WKT string POLYGON((...))
 	 * use WICKET as viewer
 	 * http://arthur-e.github.io/Wicket/sandbox-gmaps3.html
-	 *
 	 * @return string
 	 */
 	public function polyWktString() {
@@ -142,7 +141,6 @@ class Polygon
 
 	/**
 	 * Format into a GeoJson structure (not a json string, but a php array)
-	 *
 	 * @return array - php array representing the geoJson structure
 	 */
 	public function polyGeoJsonArray() {
@@ -154,9 +152,9 @@ class Polygon
 		$coords[] = [floatval($this->poly[0]->longitude), floatval($this->poly[0]->latitude)];
 
 		$rv = ['type' => 'Feature',
-			'geometry' => [
-				'type' => 'Polygon',
-				'coordinates' => [$coords],
+				'geometry' => [
+					'type' => 'Polygon',
+					'coordinates' => [$coords],
 			],
 			'properties' => [],
 		];
@@ -166,9 +164,7 @@ class Polygon
 
 	/**
 	 * Convert to a GeoJson string. Option for pretty-printing the string repr.
-	 *
 	 * @param bool $pretty
-	 *
 	 * @return false|string
 	 */
 	public function polyGeoJsonString($pretty = false) {
@@ -177,7 +173,6 @@ class Polygon
 
 	/**
 	 * Convert to a Lat - Lng array  [ ['lat'=>...,'lng'=>...] ... ]
-	 *
 	 * @return array
 	 */
 	public function polyLatLngArray() {
@@ -192,31 +187,21 @@ class Polygon
 
 	/**
 	 * Two polygons are equal when each vertex is within approx 10 cm
-	 *
 	 * @param $other
-	 *
 	 * @return bool
 	 */
 	public function equals($other) {
-		if (is_null($other)) {
-			return false;
-		}
-		if ($other == $this) {
-			return true;
-		}
-		if (!($other instanceof self)) {
-			return false;
-		}
+		if (is_null($other))            return false;
+		if ($other == $this)            return true;
+		if (!($other instanceof self))  return false;
 
 		return $this->polyString() == $other->polyString(); // just compare their polystrings
 	}
 
 	/**
 	 * fast function to determine "far" away from polygon to avoid complex 'contains' calculation
-	 *
 	 * @param $c
-	 *
-	 * @return
+	 * @return bool
 	 */
 	public function farAway(Coord $c) {
 		return !$this->valid() || $this->poly[0]->distance($c) > 15000; // 15 km apart from first element is "far" away
@@ -224,9 +209,7 @@ class Polygon
 
 	/**
 	 * Does the poly contain a coordinate
-	 *
 	 * @param Coord point
-	 *
 	 * @return bool
 	 */
 	public function contains(Coord $point) {
@@ -242,14 +225,12 @@ class Polygon
 			}
 			$pJ = $pI;   // now test next against previous
 		}
-
 		return $contains;
 	}
 
 	/**
 	 * Signed area of polygon in square 100m2 (needed for center) (can be negative dep. on CW / CCW )
 	 * Note: 1 lat/long degree is about 100km. So the result is in square 100km. Use ringarea to get meters
-	 *
 	 * @return float
 	 */
 	public function signedArea() {
@@ -262,7 +243,6 @@ class Polygon
 			$next = ($i < count($this->poly) - 1) ? $i + 1 : 0;    // make it a loop
 			$sum += $this->poly[$i]->longitude * $this->poly[$next]->latitude - $this->poly[$next]->longitude * $this->poly[$i]->latitude;
 		}
-
 		return $sum / 2;
 	}
 
@@ -279,9 +259,7 @@ class Polygon
 	 *     Polygons on a Sphere", JPL Publication 07-03, Jet Propulsion
 	 *     Laboratory, Pasadena, CA, June 2007 http://trs-new.jpl.nasa.gov/dspace/handle/2014/40409
 	 * https://sgp1.digitaloceanspaces.com/proletarian-library/books/5cc63c78dc09ee09864293f66e2716e2.pdf
-	 *
 	 * @return float
-	 *
 	 * @see https://github.com/mapbox/geojson-area/blob/master/index.js#L55
 	 */
 	public function ringArea() {
@@ -305,7 +283,6 @@ class Polygon
 
 	/**
 	 * real area is always positive
-	 *
 	 * @return
 	 */
 	public function areaSquareMeters() {
@@ -314,7 +291,6 @@ class Polygon
 
 	/**
 	 * calculate the center
-	 *
 	 * @return Coord $coord
 	 */
 	public function center() {
@@ -346,7 +322,6 @@ class Polygon
 
 	/**
 	 * get the outer circumference of a polygon
-	 *
 	 * @return float
 	 */
 	public function smallestOuterCircleRadius() {
@@ -372,7 +347,6 @@ class Polygon
 
 	/**
 	 * largest inner circle against the center
-	 *
 	 * @return
 	 */
 	public function largestInnerCircleRadius() {
@@ -391,10 +365,8 @@ class Polygon
 
 	/**
 	 * Factory to get an expanded new polygon by expand meters in all directions outwards (positive by)
-	 *
 	 * @param expand
 	 * @param mixed $expand
-	 *
 	 * @return
 	 */
 	public function expand($expand) {
@@ -418,9 +390,6 @@ class Polygon
 	/**
 	 * @param float $tolerance      - distance to be considered to simplify (0.000001=1dm 0.00001=1m 0.0001=10m)
 	 * @param bool  $highestQuality
-	 *
-	 * @throws Exception
-	 *
 	 * @return Polygon
 	 */
 	public function simplify($tolerance = 0.0001, $highestQuality = true) {
@@ -466,7 +435,6 @@ class Polygon
 		if ($prevPoint !== $point) {
 			$newPoints[] = $point;
 		}
-
 		return $newPoints;
 	}
 
@@ -534,7 +502,8 @@ class Polygon
 			if ($t > 1) {
 				$x = $p2['lng'];
 				$y = $p2['lat'];
-			} elseif ($t > 0) {
+			}
+			elseif ($t > 0) {
 				$x += $dx * $t;
 				$y += $dy * $t;
 			}
@@ -570,7 +539,6 @@ class Polygon
 			list($lon, $lat) = explode(' ', trim($node));    // php7.1: [$lon,$lat]
 			$rv[] = new Coord($lat, $lon);
 		}
-
 		return $rv;
 	}
 }

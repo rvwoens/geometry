@@ -18,7 +18,7 @@ class Coord {
 	 * @param $lat - latitude
 	 * @param $lon - longitude
 	 */
-	public function __construct(double $lat, $lon) {
+	public function __construct($lat, $lon) {
 		if (is_string($lat))
 			$lat = $this->strToFloat($lat);
 		if (is_string($lon))
