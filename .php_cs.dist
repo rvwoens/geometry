@@ -5,18 +5,20 @@ use PhpCsFixer\Finder;
 
 // for documenation use `php-cs-fixer describe <rule>`
 $rules = [
-    //'@PSR2' => true, no. We use some exceptions, notably } and else on separate lines exceptions
+    //'@PSR2' => true, no. We use some exceptions, notably } and else on separate lines 
     // PSR2
     'blank_line_after_namespace' => true,       //There MUST be one blank line after the namespace declaration.
-    // we dont use braces as this places } on the same line as else without option to suppress this
+
+    // php-cs braces and class_definition is useless at this point as this places } on the same line as else without extra newline
     //    'braces' => [                         //The body of each structure MUST be enclosed by braces. Braces should be properly placed. Body of braces should be properly indented.
-    //        //'position_before_control_structures'=>true,
-    //       'allow_single_line_closure'=>true,
+    //        //'position_before_control_structures'=>true,     // for some reason this is rejected
+    //        'allow_single_line_closure'=>true,
     //        'position_after_anonymous_constructs'=>'same',
     //        'position_after_control_structures'=>'same',
     //        'position_after_functions_and_oop_constructs'=>'same',
     //    ],
     //'class_definition'=>true,                 // Whitespace around the keywords of a class, trait or interfaces definition should be one space. // not used as this also messes with the braces of the class
+
     'constant_case'=>true,                      // The PHP constants `true`, `false`, and `null` MUST be written using the correct casing.
     'elseif'=>true,                             // The keyword `elseif` should be used instead of `else if` so that all control keywords look like single words.
     'encoding'=>true,                           // PHP code MUST use only UTF-8 without BOM (remove BOM).
@@ -87,19 +89,20 @@ $rules = [
     'phpdoc_no_empty_return'=>true,
 ];
 
+$excludes = [
+    'vendor',
+    'storage',
+    'node_modules',
+    'bootstrap/cache',
+];
 $finder = Finder::create()
-    ->in(__DIR__);
-//    ->notPath('bootstrap/cache')
-//    ->notPath('storage')
-//    ->notPath('vendor')
-//    ->name('*.php')
-//    ->notName('*.blade.php')
-//    ->ignoreDotFiles(true)
-//    ->ignoreVCS(true);
+    ->in(__DIR__)
+    ->exclude($excludes)
+    ->notName('*.blade.php');
 
 return Config::create()->setRules($rules)
              ->setFinder(Finder::create()->in(__DIR__))
              ->setUsingCache(false)
-             ->setIndent("\t")              // spaces are silly
+             ->setIndent("\t")              // tabs trump spaces
              ->setLineEnding("\n")          // who needs MSDOS
              ->setRiskyAllowed(true);
