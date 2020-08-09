@@ -6,24 +6,27 @@ use Exception;
  * Polygon class. Basically a set of Coords (at least 3, a triangle)
  * Polygons close themselves: The last point is connected to the first.
  * Can be CCW or CW, does not matter. However can not contain holes etc.
+ *
  * @author rvw
+ *
  * @version 1.0
+ *
  * @since 20-04-2020.
  */
 class Polygon
 {
-	private $poly = array();   // smallest poly is a triangle!
+	private $poly = [];   // smallest poly is a triangle!
 
 	/**
 	 * Polygon constructor.
 	 *
 	 * @param $latlngpoly - simple polygon [ [4,5], [4,6] ..], coords polygon [ Coord, Coord ..] or latlng polygon [ ['lat'=>5, 'lng'=>1],.. ] or string "4,5|5,6|..."
+	 * @param mixed $poly
 	 *
 	 * @throws Exception
 	 */
-	public function __construct($poly)
-	{
-		$this->poly = array();
+	public function __construct($poly) {
+		$this->poly = [];
 		if (is_array($poly)) {
 			if (count($poly) < 3) {
 				throw new Exception('Polygon must have at least 3 points');
@@ -90,8 +93,7 @@ class Polygon
 	 *
 	 * @return bool
 	 */
-	public function valid()
-	{
+	public function valid() {
 		return count($this->poly) > 2;
 	}
 
@@ -100,8 +102,7 @@ class Polygon
 	 *
 	 * @return int
 	 */
-	public function size()
-	{
+	public function size() {
 		return count($this->poly);
 	}
 
@@ -110,8 +111,7 @@ class Polygon
 	 *
 	 * @return string
 	 */
-	public function polyString()
-	{
+	public function polyString() {
 		$rv = '';
 		foreach ($this->poly as $coord) {
 			$rv .= $coord->toString().'|';
@@ -127,8 +127,7 @@ class Polygon
 	 *
 	 * @return string
 	 */
-	public function polyWktString()
-	{
+	public function polyWktString() {
 		$rv = 'POLYGON((';
 		/** @var Coord $coord */
 		foreach ($this->poly as $coord) {
@@ -146,22 +145,21 @@ class Polygon
 	 *
 	 * @return array - php array representing the geoJson structure
 	 */
-	public function polyGeoJsonArray()
-	{
-		$coords = array();
+	public function polyGeoJsonArray() {
+		$coords = [];
 		foreach ($this->poly as $coord) {
-			$coords[] = array(floatval($coord->longitude), floatval($coord->latitude));
+			$coords[] = [floatval($coord->longitude), floatval($coord->latitude)];
 		}
 		// close by adding first
-		$coords[] = array(floatval($this->poly[0]->longitude), floatval($this->poly[0]->latitude));
+		$coords[] = [floatval($this->poly[0]->longitude), floatval($this->poly[0]->latitude)];
 
-		$rv = array('type' => 'Feature',
-			'geometry' => array(
+		$rv = ['type' => 'Feature',
+			'geometry' => [
 				'type' => 'Polygon',
-				'coordinates' => array($coords),
-			),
-			'properties' => array(),
-		);
+				'coordinates' => [$coords],
+			],
+			'properties' => [],
+		];
 
 		return $rv;
 	}
@@ -173,8 +171,7 @@ class Polygon
 	 *
 	 * @return false|string
 	 */
-	public function polyGeoJsonString($pretty = false)
-	{
+	public function polyGeoJsonString($pretty = false) {
 		return json_encode($this->polyGeoJsonArray(), $pretty ? JSON_PRETTY_PRINT : 0);
 	}
 
@@ -183,12 +180,11 @@ class Polygon
 	 *
 	 * @return array
 	 */
-	public function polyLatLngArray()
-	{
-		$rv = array();
+	public function polyLatLngArray() {
+		$rv = [];
 		/** @var Coord $coord */
 		foreach ($this->poly as $coord) {
-			$rv[] = array('lat' => $coord->latitude, 'lng' => $coord->longitude);
+			$rv[] = ['lat' => $coord->latitude, 'lng' => $coord->longitude];
 		}
 
 		return $rv;
@@ -201,8 +197,7 @@ class Polygon
 	 *
 	 * @return bool
 	 */
-	public function equals($other)
-	{
+	public function equals($other) {
 		if (is_null($other)) {
 			return false;
 		}
@@ -223,8 +218,7 @@ class Polygon
 	 *
 	 * @return
 	 */
-	public function farAway(Coord $c)
-	{
+	public function farAway(Coord $c) {
 		return !$this->valid() || $this->poly[0]->distance($c) > 15000; // 15 km apart from first element is "far" away
 	}
 
@@ -235,8 +229,7 @@ class Polygon
 	 *
 	 * @return bool
 	 */
-	public function contains(Coord $point)
-	{
+	public function contains(Coord $point) {
 		if (!$this->valid()) {
 			return false;
 		}
@@ -259,8 +252,7 @@ class Polygon
 	 *
 	 * @return float
 	 */
-	public function signedArea()
-	{
+	public function signedArea() {
 		// https://en.wikipedia.org/wiki/Shoelace_formula
 		if (!$this->valid()) {
 			return 0.0;
@@ -292,8 +284,7 @@ class Polygon
 	 *
 	 * @see https://github.com/mapbox/geojson-area/blob/master/index.js#L55
 	 */
-	public function ringArea()
-	{
+	public function ringArea() {
 		if (!$this->valid()) {
 			return 0.0;
 		}
@@ -317,8 +308,7 @@ class Polygon
 	 *
 	 * @return
 	 */
-	public function areaSquareMeters()
-	{
+	public function areaSquareMeters() {
 		return abs($this->ringArea());
 	}
 
@@ -327,8 +317,7 @@ class Polygon
 	 *
 	 * @return Coord $coord
 	 */
-	public function center()
-	{
+	public function center() {
 		// https://en.wikipedia.org/wiki/Centroid#Of_a_polygon
 		if (!$this->valid()) {
 			return null;
@@ -360,8 +349,7 @@ class Polygon
 	 *
 	 * @return float
 	 */
-	public function smallestOuterCircleRadius()
-	{
+	public function smallestOuterCircleRadius() {
 		/// just use the farthest point around the polycenter
 		/// Should use "smallest outer circle" algorithm https://math.stackexchange.com/questions/2671307/existence-of-smallest-circle-containing-a-polygon
 		/// implementation: https://www.nayuki.io/page/smallest-enclosing-circle which could lead to an even smaller circle
@@ -387,8 +375,7 @@ class Polygon
 	 *
 	 * @return
 	 */
-	public function largestInnerCircleRadius()
-	{
+	public function largestInnerCircleRadius() {
 		$center = $this->center();
 		if (is_null($center)) {
 			return 0;
@@ -406,18 +393,18 @@ class Polygon
 	 * Factory to get an expanded new polygon by expand meters in all directions outwards (positive by)
 	 *
 	 * @param expand
+	 * @param mixed $expand
 	 *
 	 * @return
 	 */
-	public function expand($expand)
-	{
+	public function expand($expand) {
 		// 111111 meters = 1 degree, so 1 meter = 1/111111 degree (1.000009000009 or 1.00001)
 		// let scale = 1.0 + (1/111111)*expandMeters // not correct to multiply as dLat is not in
 		$center = $this->center();
 		if (is_null($center)) {
 			return 0;
 		}
-		$expandedPoly = array();
+		$expandedPoly = [];
 
 		for ($i = 0; $i < count($this->poly); $i++) {
 			$bearing = $center->bearing($this->poly[$i]);                      // from center towards pI
@@ -433,10 +420,10 @@ class Polygon
 	 * @param bool  $highestQuality
 	 *
 	 * @throws Exception
+	 *
 	 * @return Polygon
 	 */
-	public function simplify($tolerance = 0.0001, $highestQuality = true)
-	{
+	public function simplify($tolerance = 0.0001, $highestQuality = true) {
 		if (count($this->poly) < 10) {
 			// Log::warning("Polygon: No simplify ".$this->polyWktString()." less then 10 points");
 			return new self($this->polyString());  // clone
@@ -463,10 +450,9 @@ class Polygon
 	// private parts
 	//*********************************************************************************************************************
 	// SIMPLITICATION
-	private function simplifyRadialDistance($points, $sqTolerance)
-	{
+	private function simplifyRadialDistance($points, $sqTolerance) {
 		$prevPoint = $points[0];
-		$newPoints = array($prevPoint);
+		$newPoints = [$prevPoint];
 		$point = null;
 
 		for ($i = 1, $len = count($points); $i < $len; $i++) {
@@ -485,8 +471,7 @@ class Polygon
 	}
 
 	// square distance between 2 points
-	private function getSqDist($p1, $p2)
-	{
+	private function getSqDist($p1, $p2) {
 		$dx = $p1['lng'] - $p2['lng'];
 		$dy = $p1['lat'] - $p2['lat'];
 
@@ -494,14 +479,13 @@ class Polygon
 	}
 
 	// simplification using optimized Douglas-Peucker algorithm with recursion elimination
-	private function simplifyDouglasPeucker($points, $sqTolerance)
-	{
+	private function simplifyDouglasPeucker($points, $sqTolerance) {
 		$len = count($points);
 		$markers = array_fill(0, $len - 1, null);
 		$first = 0;
 		$last = $len - 1;
-		$stack = array();
-		$newPoints = array();
+		$stack = [];
+		$newPoints = [];
 		$index = null;
 
 		$markers[$first] = $markers[$last] = 1;
@@ -537,8 +521,7 @@ class Polygon
 	}
 
 	// square distance from a point to a segment
-	private static function getSqSegDist($p, $p1, $p2)
-	{
+	private static function getSqSegDist($p, $p1, $p2) {
 		// longitude = x latitude = y
 		$x = $p1['lng'];
 		$y = $p1['lat'];
@@ -564,13 +547,12 @@ class Polygon
 	}
 
 	// Convert String in WKT form to a Coord array
-	private function wkt2polygon($wkt)
-	{
+	private function wkt2polygon($wkt) {
 		// Example WKT: POLYGON((4.347604 51.930035, 4.347561 51.930106, 4.347283 51.93004, 4.347327 51.92997, 4.347604 51.930035))
 		if (!preg_match('/POLYGON\s+\(\((.*)\)\)/i', $wkt, $matches)) {
 			throw new Exception("Cant construct polygon from WKT $wkt");
 		}
-		$rv = array();
+		$rv = [];
 		$nodes = explode(',', $matches[1]);
 		if (count($nodes) < 4) {
 			throw new Exception("Invalid WKT POLYGON definion (less than 4 points): $wkt");

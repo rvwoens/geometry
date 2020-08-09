@@ -1,16 +1,29 @@
-<?php
+<?php namespace Welcome\to\this\space;
+
+/*
+ * Some dummy code to test php-cs-fixer
+ */
 declare(strict_types=1);
 
-class Foo
-{
-	public function foo($x, $z, $obj, $one)
-	{
+class Foo {
+	/** @var int f */
+	public $f = 3;
+
+	/**
+	 * lets foo here
+	 * @param $x
+	 * @param $z
+	 * @param $obj
+	 * @param $one
+	 */
+	public function foo($x, $z, $obj, $one) {
 		global $k, $s1, $y;
 		$obj->foo()->bar();
-		$arr = array(0 => 'zero', 1 => 'one');
+		$arr = [0 => 'zero', 1 => 'one'];
 		call_func(function () {
 			return 0;
 		});
+		$gg=[ 4=>5, 6=>7];
 		for ($i = 0; $i < $x; $i++) {
 			$y += ($y ^ 0x123) << 2;
 		}
@@ -25,15 +38,16 @@ class Foo
 						$x = f($x * 3 + 5);
 					}
 					$z += 2;
-				} elseif ($x > 20) {
+				}
+				elseif ($x > 20) {
 					$z = $x << 1;
-				} else {
+				}
+				else {
 					$z = $x | 2;
 				}
-
 				$j = (int) $z;
 				switch ($j) {
-					case 0:
+				case 0:
 					$s1 = 'zero';
 					break;
 				case 2:
@@ -50,14 +64,13 @@ class Foo
 				$a = $one['a'];
 				echo $val{'foo'.$num}[$cell{$a}];
 			} finally {
-				// do something
+				// somebody do something
 			}
 		} while ($x < 0);
 	}
 }
 
-function bar(): Foo
-{
+function bar(): Foo {
 }
 
 //

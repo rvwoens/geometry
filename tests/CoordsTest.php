@@ -10,24 +10,21 @@ use Rvwoens\Geometry\Coord;
  */
 class CoordsTest extends TestCase
 {
-	public function testInstantiationOfCoord()
-	{
+	public function testInstantiationOfCoord() {
 		$obj = new Coord(52, 5);
 		$this->assertInstanceOf('\Rvwoens\Geometry\Coord', $obj);
 		$this->assertEqualsWithDelta(52, $obj->latitude, 1E-5, 'Latitude is not ok');
 		$this->assertEqualsWithDelta(5, $obj->longitude, 1E-5, 'Latitude is not ok');
 	}
 
-	public function testDistanceCorrect()
-	{
+	public function testDistanceCorrect() {
 		$p1 = new Coord(52.773767, 6.180272);
 		$p2 = new Coord(52.773581, 6.180304);
 		$this->assertEquals($p1->distance($p2), 20.8, 'distance error', 0.1);
 		$this->assertEquals($p2->distance($p1), 20.8, 'distance error', 0.1);
 	}
 
-	public function testBearingCorrect()
-	{
+	public function testBearingCorrect() {
 		$p1 = new Coord(0, 0);
 		$p2 = new Coord(0.00001, 0); // move north
 		$this->assertEquals($p1->bearing($p2), 0, 'bearing error', 0.001);
@@ -47,8 +44,7 @@ class CoordsTest extends TestCase
 		$this->assertEquals($p6->bearing($p5), 270, 'bearing error', 0.001);
 	}
 
-	public function testMoveCorrect()
-	{
+	public function testMoveCorrect() {
 		$p1 = new Coord(0, 0);
 		$p2 = $p1->movedClone(112, 0); // moved  distance 112 m north bearin 0
 		$this->assertEquals($p2->latitude, 0.0010069560824378324, 'move error', 0.001);

@@ -5,14 +5,13 @@ use Rvwoens\Geometry\Polygon;
 
 class PolygonTest extends TestCase
 {
-	public function testInit()
-	{
-		$test = array(
+	public function testInit() {
+		$test = [
 				new Coord(1, 1),
 				new Coord(2, 1),
 				new Coord(2, 2),
 				new Coord(1, 2),
-		);
+		];
 		$p1 = new Polygon($test);
 
 		// test with string init
@@ -20,30 +19,28 @@ class PolygonTest extends TestCase
 
 		$this->assertTrue($p1->equals($p2));
 
-		$test3 = array(array(1,1),array(2,1),array(2,2),array(1,2));
+		$test3 = [[1,1],[2,1],[2,2],[1,2]];
 		$p3 = new Polygon($test3);
 		$this->assertTrue($p3->equals($p1));
 
-		$test4 = array(array('lat' => 1,'lng' => 1), array('lat' => 2, 'lng' => 1), array('lat' => 2, 'lng' => 2), array('lat' => 1, 'lng' => 2));
+		$test4 = [['lat' => 1,'lng' => 1], ['lat' => 2, 'lng' => 1], ['lat' => 2, 'lng' => 2], ['lat' => 1, 'lng' => 2]];
 		$p4 = new Polygon($test4);
 		$this->assertTrue($p4->equals($p1));
 	}
 
-	public function testTostring()
-	{
-		$test = array(
+	public function testTostring() {
+		$test = [
 				new Coord(1, 1),
 				new Coord(2, 1),
 				new Coord(2, 2),
 				new Coord(1, 2),
-		);
+		];
 		$p1 = new Polygon($test);
 		//System.out.println("p1 polystring: "+p1.polyString());
 		$this->assertEquals($p1->polyString(), '1.000000,1.000000|2.000000,1.000000|2.000000,2.000000|1.000000,2.000000|');
 	}
 
-	public function testCenter()
-	{
+	public function testCenter() {
 		$p1 = new Polygon('1,1|2,1|2,2|1,2');
 		$this->assertTrue($p1->center()->equals(new Coord(1.5, 1.5)));
 		// lat   g
@@ -69,8 +66,7 @@ class PolygonTest extends TestCase
 		$this->assertEquals($center3, new Coord(52.77353314193018, 6.1802023372608526), 'center', 0.000001); // xCode calculated value
 	}
 
-	public function testOutercircle()
-	{
+	public function testOutercircle() {
 		$p1 = new Polygon(
 			'52.773351978321,6.180108127987|52.773389299363,6.1804309267635|'.
 			'52.773571452384,6.180429585659|52.773564556135,6.1802386819716|'.
@@ -83,8 +79,7 @@ class PolygonTest extends TestCase
 		$this->assertEquals(28.92, $radius, 'outercircle', 0.1);
 	}
 
-	public function testInnercircle_isCorrect()
-	{
+	public function testInnercircle_isCorrect() {
 		$p1 = new Polygon('52,6|52.001,6|52.001,6.001|52,6.001|');
 		$radius = $p1->largestInnerCircleRadius();
 		$center = $p1->center();
@@ -92,8 +87,7 @@ class PolygonTest extends TestCase
 		$this->assertEquals(65.38, $radius, 'inner', 0.1);
 	}
 
-	public function testExpand()
-	{
+	public function testExpand() {
 		$p1 = new Polygon(
 			'52.773351978321,6.180108127987|52.773389299363,6.1804309267635|'.
 			'52.773571452384,6.180429585659|52.773564556135,6.1802386819716|'.
@@ -110,8 +104,7 @@ class PolygonTest extends TestCase
 		$this->assertEquals($p4->polyString(), '0.999994,0.999994|1.000016,0.999994|1.000016,1.000016|0.999994,1.000016|');
 	}
 
-	public function testPolyContains()
-	{
+	public function testPolyContains() {
 		// This is an example of a functional test case.
 		// Use XCTAssert and related functions to verify your tests produce the correct results.
 		$hf = new Polygon('1,1|2,1|2,2|1,2');
@@ -127,8 +120,7 @@ class PolygonTest extends TestCase
 		$this->assertFalse($hf->contains($coord4));
 	}
 
-	public function testPolyContainsCCW()
-	{
+	public function testPolyContainsCCW() {
 		// This is an example of a functional test case.
 		// Use XCTAssert and related functions to verify your tests produce the correct results.
 		$hf = new Polygon('1,1|1,2|2,2|2,1');
@@ -144,8 +136,7 @@ class PolygonTest extends TestCase
 		$this->assertFalse($hf->contains($coord4));
 	}
 
-	public function testComplexPolyContains()
-	{
+	public function testComplexPolyContains() {
 		//       g
 		// 5   +--+
 		// 4   | b| f
@@ -172,8 +163,7 @@ class PolygonTest extends TestCase
 		$this->assertFalse($hf->contains($coordg));
 	}
 
-	public function testComplexPolyContainsCCW()
-	{
+	public function testComplexPolyContainsCCW() {
 		//       g
 		// 5   +--+
 		// 4   | b| f
@@ -200,8 +190,7 @@ class PolygonTest extends TestCase
 		$this->assertFalse($hf->contains($coordg));
 	}
 
-	public function testComplexPolyVoortuin()
-	{
+	public function testComplexPolyVoortuin() {
 		$hf = new Polygon(
 			'52.773351978321,6.180108127987|52.773389299363,6.1804309267635|'.
 			'52.773571452384,6.180429585659|52.773564556135,6.1802386819716|'.
@@ -218,8 +207,7 @@ class PolygonTest extends TestCase
 		$this->assertFalse($hf->contains($coordc));
 	}
 
-	public function testAreaVoortuin()
-	{
+	public function testAreaVoortuin() {
 		$hf = new Polygon(
 			'52.773351978321,6.180108127987|52.773389299363,6.1804309267635|'.
 			'52.773571452384,6.180429585659|52.773564556135,6.1802386819716|'.
@@ -234,8 +222,7 @@ class PolygonTest extends TestCase
 		//echo "\n\n".$hf->polyGeoJsonString()."\n";
 	}
 
-	public function testPolyConcave()
-	{
+	public function testPolyConcave() {
 		//
 		// 11            x
 		// 10       ___-- \
@@ -273,8 +260,7 @@ class PolygonTest extends TestCase
 		$this->assertFalse($hf->contains(new Coord(9, 6)));
 	}
 
-	public function testContainsUilenbos()
-	{
+	public function testContainsUilenbos() {
 		// 718661
 		// 52.777413,6.175508 does NOT contain
 		//{"id":718661,"poly":"52.773295,6.179491|52.776129,6.186224|52.781629,6.180451|52.779042,6.173573|"}
@@ -283,11 +269,10 @@ class PolygonTest extends TestCase
 		$this->assertTrue($hf->contains($dasburgt));
 	}
 
-	public function testValid8()
-	{
-		$ill = array(
+	public function testValid8() {
+		$ill = [
 			new Coord(1, 1), new Coord(2, 2), new Coord(3, 3),
-		);
+		];
 		$i = new Polygon($ill);
 		$this->assertTrue($i->valid());
 	}

@@ -32,6 +32,6 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-        "fix": "vendor/bin/php-cs-fixer fix -v"
+        "fix": "vendor/bin/php-cs-fixer fix"
     }
 }
