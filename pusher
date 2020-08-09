@@ -7,8 +7,8 @@ else
 	echo "Use version format vX.X.XX"
 	NEWTAG=$1
 fi
-#echo "Running style fix"
-#composer run fix
+echo "Running style fix"
+composer run fix
 echo ">>>> git pull origin (CI might commit stuff)"
 git pull origin
 echo "Creating new version tag $NEWTAG"
