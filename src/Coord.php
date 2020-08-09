@@ -1,66 +1,88 @@
 <?php namespace Rvwoens\Geometry;
 
 /**
- *
  * a basic coordinate with latitude and longitude only
+ *
  * @author rvw
+ *
  * @version 1.0
+ *
  * @since 17-04-2020.
  */
-class Coord {
+class Coord
+{
 	//                    Mdcm  M=meter d=decimenter c=centimeter m=millimeter level (approx)
 	const EPSILON = 0.00000001;
 
-	public $latitude  = 0.0;
+	public $latitude = 0.0;
 	public $longitude = 0.0;
 
-	public function __construct($lat, $lon) {
-		if (is_string($lat))
+	public function __construct($lat, $lon)
+	{
+		if (is_string($lat)) {
 			$lat = $this->strToFloat($lat);
-		if (is_string($lon))
+		}
+		if (is_string($lon)) {
 			$lon = $this->strToFloat($lon);
+		}
 		$this->latitude = $lat;
 		$this->longitude = $lon;
 	}
 
-	public function clone() {
+	public function clone()
+	{
 		return new static($this->latitude, $this->longitude);
 	}
 
-	public function movedClone($distance, $bearing) {
+	public function movedClone($distance, $bearing)
+	{
 		return $this->clone()->move($distance, $bearing);
 	}
 
-	public function toString() {
+	public function toString()
+	{
 		// LAT,LNG
-		return sprintf("%.6f,%.6f", $this->latitude, $this->longitude);
+		return sprintf('%.6f,%.6f', $this->latitude, $this->longitude);
 	}
 
-	public function toWktString() {
+	public function toWktString()
+	{
 		// LNG LAT
-		return sprintf("%.6f %.6f", $this->longitude, $this->latitude);
+		return sprintf('%.6f %.6f', $this->longitude, $this->latitude);
 	}
 
-	public function equals($other) {
-		if ($other == null) return false;
-		if ($other == $this) return true;
-		if ($other instanceof Coord)
+	public function equals($other)
+	{
+		if ($other == null) {
+			return false;
+		}
+		if ($other == $this) {
+			return true;
+		}
+		if ($other instanceof self) {
 			return abs($other->latitude - $this->latitude) <= self::EPSILON && abs($other->longitude - $this->longitude) <= self::EPSILON;
+		}
+
 		return false;
 	}
 
-	public function distance(Coord $other) {
+	public function distance(self $other)
+	{
 		$dist = static::haversine($this->latitude, $this->longitude, $other->latitude, $other->longitude);
+
 		return $dist;
 	}
 
 	/**
 	 * get bearing of 2 locatons 0 = north 90=east 180=south 270=west
 	 * FROM self TOWARDS p
+	 *
 	 * @param p
+	 *
 	 * @return
 	 */
-	public function bearing(Coord $p) {
+	public function bearing(self $p)
+	{
 		$lat1 = deg2rad($this->latitude);
 		$lon1 = deg2rad($this->longitude);
 
@@ -78,15 +100,18 @@ class Coord {
 		if ($degreesBearing < 0.0) {
 			return $degreesBearing + 360.0;
 		}
+
 		return $degreesBearing;
 	}
 
 	/**
 	 * move over a distance with a bearing
+	 *
 	 * @param distance
 	 * @param bearing
 	 */
-	public function move($distance, $bearing) {
+	public function move($distance, $bearing)
+	{
 		$bearRadians = deg2rad($bearing);
 		$distRadians = $distance / (6372797.6); // earth radius in meters
 
@@ -98,19 +123,23 @@ class Coord {
 
 		$this->latitude = rad2deg($lat2);
 		$this->longitude = rad2deg($lon2);
+
 		return $this;
 	}
 
-	private function doubleEquals($a, $b) {
+	private function doubleEquals($a, $b)
+	{
 		return $a == $b ? true : abs($a - $b) < 1E-10;
 	}
 
-	private function strToFloat($str) {
+	private function strToFloat($str)
+	{
 		// allow 1,5 and 1.5
-		$val = str_replace(",", ".", (string)$str);
-		if (!preg_match("/[0-9.]*/", $val)) {
+		$val = str_replace(',', '.', (string) $str);
+		if (!preg_match('/[0-9.]*/', $val)) {
 			return null;
 		}
+
 		return floatval($val);
 	}
 
@@ -119,15 +148,18 @@ class Coord {
 	 * not needed: Latlng float distanceTo (Location dest)
 	 * float[] results = new float[1];
 	 * Location.distanceBetween(1, 2, 2 , 2, results);
+	 *
 	 * @param lat1
 	 * @param lon1
 	 * @param lat2
 	 * @param lon2
+	 *
 	 * @return
 	 */
 	const R = 6372.8; // In kilometers
 
-	public static function haversine($lat1, $lon1, $lat2, $lon2) {
+	public static function haversine($lat1, $lon1, $lat2, $lon2)
+	{
 		$dLat = deg2rad($lat2 - $lat1);
 		$dLon = deg2rad($lon2 - $lon1);
 		$lat1 = deg2rad($lat1);
@@ -135,8 +167,7 @@ class Coord {
 
 		$a = sin($dLat / 2) * sin($dLat / 2) + sin($dLon / 2) * sin($dLon / 2) * cos($lat1) * cos($lat2);
 		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
 		return 1000.0 * static::R * $c;
 	}
-
-
 }
