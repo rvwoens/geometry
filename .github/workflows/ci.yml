@@ -36,6 +36,9 @@ jobs:
     - name: Run test suite
       run: composer run-script test
 
+    - name: Run phpmd code smell
+      run: composer run-script smell
+
     - name: Run php-cs-fixer
       run: composer run-script fix
 

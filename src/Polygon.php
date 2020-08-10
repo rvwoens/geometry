@@ -526,7 +526,7 @@ class Polygon {
 		if (count($nodes) < 4) {
 			throw new Exception("Invalid WKT POLYGON definion (less than 4 points): $wkt");
 		}
-	
+
 		if (trim($nodes[0]) == trim(end($nodes))) {
 			//array_shift($nodes);	// remove first
 			array_pop($nodes);    // remove last
