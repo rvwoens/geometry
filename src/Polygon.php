@@ -216,14 +216,14 @@ class Polygon {
 		if (!$this->valid()) {
 			return false;
 		}
-		$pJ = $this->poly[count($this->poly) - 1];       // first test last against first
+		$pointJ = $this->poly[count($this->poly) - 1];       // first test last against first
 		$contains = false;
-		foreach ($this->poly as $pI) {
-			if ((($pI->longitude >= $point->longitude) != ($pJ->longitude >= $point->longitude)) &&        // point longitude is inbetween both polyoints. If pI.lng and pJ.lng are both equal, this is never true. So we never get a div-by-zero in the line below
-				($point->latitude <= ($pJ->latitude - $pI->latitude) * ($point->longitude - $pI->longitude) / ($pJ->longitude - $pI->longitude) + $pI->latitude)) {
+		foreach ($this->poly as $pointI) {
+			if ((($pointI->longitude >= $point->longitude) != ($pointJ->longitude >= $point->longitude)) &&        // point longitude is inbetween both polyoints. If pI.lng and pJ.lng are both equal, this is never true. So we never get a div-by-zero in the line below
+				($point->latitude <= ($pointJ->latitude - $pointI->latitude) * ($point->longitude - $pointI->longitude) / ($pointJ->longitude - $pointI->longitude) + $pointI->latitude)) {
 				$contains = !$contains;
 			}
-			$pJ = $pI;   // now test next against previous
+			$pointJ = $pointI;   // now test next against previous
 		}
 		return $contains;
 	}
@@ -308,9 +308,9 @@ class Polygon {
 		for ($i = 0; $i < count($this->poly); $i++) {
 			$next = ($i < count($this->poly) - 1) ? $i + 1 : 0;    // make it a loop
 
-			$second_fac = $this->poly[$i]->longitude * $this->poly[$next]->latitude - $this->poly[$next]->longitude * $this->poly[$i]->latitude;
-			$x += ($this->poly[$i]->longitude + $this->poly[$next]->longitude) * $second_fac;
-			$y += ($this->poly[$i]->latitude + $this->poly[$next]->latitude) * $second_fac;
+			$secondFac = $this->poly[$i]->longitude * $this->poly[$next]->latitude - $this->poly[$next]->longitude * $this->poly[$i]->latitude;
+			$x += ($this->poly[$i]->longitude + $this->poly[$next]->longitude) * $secondFac;
+			$y += ($this->poly[$i]->latitude + $this->poly[$next]->latitude) * $secondFac;
 		}
 		// divide by 6x area
 
@@ -526,7 +526,7 @@ class Polygon {
 		if (count($nodes) < 4) {
 			throw new Exception("Invalid WKT POLYGON definion (less than 4 points): $wkt");
 		}
-		$last = trim(end($nodes));
+	
 		if (trim($nodes[0]) == trim(end($nodes))) {
 			//array_shift($nodes);	// remove first
 			array_pop($nodes);    // remove last

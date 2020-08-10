@@ -65,16 +65,16 @@ class Coord {
 
 	/**
 	 * get bearing of 2 locatons 0 = north 90=east 180=south 270=west
-	 * FROM self TOWARDS p
-	 * @param p
+	 * FROM self TOWARDS point
+	 * @param point
 	 * @return
 	 */
-	public function bearing(self $p) {
+	public function bearing(self $point) {
 		$lat1 = deg2rad($this->latitude);
 		$lon1 = deg2rad($this->longitude);
 
-		$lat2 = deg2rad($p->latitude);
-		$lon2 = deg2rad($p->longitude);
+		$lat2 = deg2rad($point->latitude);
+		$lon2 = deg2rad($point->longitude);
 
 		$dLon = $lon2 - $lon1;
 
@@ -112,10 +112,6 @@ class Coord {
 		$this->longitude = rad2deg($lon2);
 
 		return $this;
-	}
-
-	private function doubleEquals($a, $b) {
-		return $a == $b ? true : abs($a - $b) < 1E-10;
 	}
 
 	private function strToFloat($str) {
