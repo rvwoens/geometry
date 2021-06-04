@@ -417,11 +417,11 @@ class Polygon {
 
 	/**
 	 * Factory to get an expanded new polygon by expand meters in all directions outwards (positive by)
-	 * @param ?Polygon $expand
+	 * @param float $expand
 	 * @throws Exception
 	 * @return ?Polygon
 	 */
-	public function expand($expand):?Polygon {
+	public function expand(float $expand):?Polygon {
 		// 111111 meters = 1 degree, so 1 meter = 1/111111 degree (1.000009000009 or 1.00001)
 		// let scale = 1.0 + (1/111111)*expandMeters // not correct to multiply as dLat is not in
 		$center = $this->center();

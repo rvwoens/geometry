@@ -54,6 +54,7 @@ polyLatLngArray()               - convert to array format [ ['lat'=>lat,'lng'=>l
 equals($polyon2)                - true when each node is within 1mm of the other
 farAway($coord)                 - true when polygon is "far away" from the coord (fast!) to speed up some calculations
 distance($coord | $polygon)     - closest distance to a point or another polygon
+round($precision)               - round each node of the polygon to a certain precision (default 6 approx 10cm)
 
 contains($coord)                - true when Coord is inside the polygon
 areaSquareMeters()              - returns area of polygon in square meters using earth projection
@@ -63,10 +64,10 @@ center()                        - calculate the center of mass of the polygon as
 smallestOuterCircleRadius()     - calculate the smallest outer circle (simple version)
 largestInnerCircleRadius()      - calculate the smallest inner circle (simple version)
 
-expand(10)                      - expand (blow up) the polygon by x meters (negative values will deflate the polygon)
+// Immutable object. Each method creates a copy 
+expand(10)                      - create an expanded (inflated) polygon by x meters (negative values will deflate the polygon)
 movedClone($distance,$bearing)  - create a moved copy of the polygon
-round($precision)               - round each node of the polygon to a certain precision (default 6 approx 10cm)
-simplify($distance,$highQuality)- simplify the polygon by removing coordinates but keeping shape
+simplify($distance,$highQuality)- create a simplified polygon by removing coordinates but keeping shape
 ```
 
 
