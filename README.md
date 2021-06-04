@@ -25,7 +25,7 @@ toWktString()                           - "4.577632 52.400102"  WKT (Well Known 
 equals($coord2)                         - a coord is equal when within a millimeter of another coord 
 distance($coord3)                       - calculate distance between coords in meters
 bearing($coordTo)                       - Bearing (degrees) between 2 coords (vector TOWARDS coordTo, 0=north)
-move($distance,$bearing);               - move of coord (use movedclone for immutable varian)
+move($distance,$bearing);               - move of coord (use movedclone for immutable variant)
 ```
 
 ### Polygon
@@ -64,7 +64,7 @@ center()                        - calculate the center of mass of the polygon as
 smallestOuterCircleRadius()     - calculate the smallest outer circle (simple version)
 largestInnerCircleRadius()      - calculate the smallest inner circle (simple version)
 
-// Immutable object. Each method creates a copy 
+// Each method creates a clone. Polygon is immutable 
 expand(10)                      - create an expanded (inflated) polygon by x meters (negative values will deflate the polygon)
 movedClone($distance,$bearing)  - create a moved copy of the polygon
 simplify($distance,$highQuality)- create a simplified polygon by removing coordinates but keeping shape
