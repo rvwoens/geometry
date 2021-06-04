@@ -18,14 +18,14 @@ $lat=$coord->latitude;                  // latitude property
 $lng=$coord->longitude;                 // longitude property
 
 // methods
-$coord2 = $coord->clone();              // clone the coord
-$coord3 = $coord->movedClone(50, 180);  // make a clone and move it 50 meter southwards (bearing 180)
-echo $coord->toString();                // "52.400102,4.577632"  6 digits significant (approx 10 cm)
-echo $coord->toWktString();             // "4.577632 52.400102"  WKT (Well Known Text format)
-if ($coord->equals($coord2)) ..         // A coord is equal when within a millimeter of another coord 
-$dist = $coord->distance($coord3);      // calculate distance between coords in meters
-$bearing = $coord->bearing($coord3);    // Bearing: 0 = north 90=east 180=south 270=west FROM coord TOWARDS coord3
-$coord->move($distance,$bearing);       // mutable move of coord (use movedclone for immutable)
+round(5)                                - round lat/long to a precision (default 6 = approx 10 cm)
+movedClone(50, 180)                     - make a clone and move it 50 meter southwards (bearing 180)
+toString()                              - "52.400102,4.577632"  6 digits significant (approx 10 cm)
+toWktString()                           - "4.577632 52.400102"  WKT (Well Known Text format)
+equals($coord2)                         - a coord is equal when within a millimeter of another coord 
+distance($coord3)                       - calculate distance between coords in meters
+bearing($coordTo)                       - Bearing (degrees) between 2 coords (vector TOWARDS coordTo, 0=north)
+move($distance,$bearing);               - move of coord (use movedclone for immutable varian)
 ```
 
 ### Polygon
@@ -44,25 +44,29 @@ $polygon = new Polygon("POLYGON ((4.2 52.1, 52.2 4.2, 4.3 52.2, 4.2 52.1))");   
 $polygon = new Polygon("52.1,4.2|52.2,4.2|52.2,4.3");                           // or using the internal serialisation 
 
 // methods
-$polygon->valid();              // a polygon is valid when it is at least a triangle with 3 valid Coords
-$polygon->size();               // number of sides of the polygon or n of the n-gon.
-echo $polygon->polyString();    // to internal serialisation string "52.1,4.2|52.2,4.2|52.2,4.3"
-echo $polygon->polyWktString(); // to WKT definition "POLYGON ((4.2 52.1, 52.2 4.2, 4.3 52.2, 4.2 52.1))"
-json_encode($polygon->polyGeoJsonArray());  // convert to Geojson string
-$polygon->polyGeoJsonString();              // convert to Geojson string
-$polygon->polyLatLngArray();                // convert to array format [ ['lat'=>lat,'lng'=>lng]...]
-$polygon->equals($polyon2);     // true when each coordinate is within 1mm 
-$polygon->farAway($coord);      // true when polygon is "far away" from the coord to speed up some calculations
-$polygon->contains($coord);     // true when Coord is inside the polygon
-$polygon->areaSquareMeters();   // returns area of polygon in square meters using earth projection
-$coord=$polygon->center();      // calculate the center of mass of the polygon as a Coord
+valid()                         - a polygon is valid when it is at least a triangle with 3 valid Coords
+size()                          - number of sides of the polygon or n of the n-gon.
+polyString()                    - to internal serialisation string "52.1,4.2|52.2,4.2|52.2,4.3"
+polyWktString()                 - to WKT definition "POLYGON ((4.2 52.1, 52.2 4.2, 4.3 52.2, 4.2 52.1))"
+polyGeoJsonArray()              - convert to Geojson but in php array format
+polyGeoJsonString()             - convert to Geojson json string
+polyLatLngArray()               - convert to array format [ ['lat'=>lat,'lng'=>lng]...]
+equals($polyon2)                - true when each node is within 1mm of the other
+farAway($coord)                 - true when polygon is "far away" from the coord (fast!) to speed up some calculations
+distance($coord | $polygon)     - closest distance to a point or another polygon
+
+contains($coord)                - true when Coord is inside the polygon
+areaSquareMeters()              - returns area of polygon in square meters using earth projection
+center()                        - calculate the center of mass of the polygon as a Coord
 
 // note: smallest outer circle and largest inner circle are simplifications. Both use polygon center
-$radius=$polygon->smallestOuterCircleRadius();  // calculate the smallest outer circle (simple version)
-$radius=$polygon->largestInnerCircleRadius();   // calculate the smallest inner circle (simple version)
+smallestOuterCircleRadius()     - calculate the smallest outer circle (simple version)
+largestInnerCircleRadius()      - calculate the smallest inner circle (simple version)
 
-$polygon2=$polygon->expand(10);                 // expand (blow up) the polygon by 10 meters
-$polygon2=$polygon->simplify(0.001,true);       // simplify the polygon by removing coordinates but keeping shape
+expand(10)                      - expand (blow up) the polygon by x meters (negative values will deflate the polygon)
+movedClone($distance,$bearing)  - create a moved copy of the polygon
+round($precision)               - round each node of the polygon to a certain precision (default 6 approx 10cm)
+simplify($distance,$highQuality)- simplify the polygon by removing coordinates but keeping shape
 ```
 
 

@@ -36,30 +36,49 @@ class Coord {
 	 * 2 = about 1km
 	 * @param int $precision
 	 */
-	public function round($precision=6) {
+	public function round(int $precision=6):void {
 		$this->latitude=round($this->latitude, $precision);
 		$this->longitude=round($this->longitude, $precision);
 	}
 
-	public function clone() {
+	public function clone(): Coord {
 		return new static($this->latitude, $this->longitude);
 	}
 
-	public function movedClone($distance, $bearing) {
+	/**
+	 * Immutable version of move.
+	 * @param float $distance
+	 * @param float $bearing
+	 * @return Coord
+	 */
+	public function movedClone(float $distance, float $bearing):Coord {
 		return $this->clone()->move($distance, $bearing);
 	}
 
-	public function toString() {
+	/**
+	 * String format lat,lng (6 digits precision = 10 cm approx)
+	 * @return string
+	 */
+	public function toString(): string {
 		// LAT,LNG
 		return sprintf('%.6f,%.6f', $this->latitude, $this->longitude);
 	}
 
-	public function toWktString() {
+	/**
+	 * Wkt string format long,lat
+	 * @return string
+	 */
+	public function toWktString(): string {
 		// LNG LAT
 		return sprintf('%.6f %.6f', $this->longitude, $this->latitude);
 	}
 
-	public function equals($other) {
+	/**
+	 * true if equal within 1 millimeter (approx)
+	 * @param $other
+	 * @return bool
+	 */
+	public function equals($other): bool {
 		if ($other == null) {
 			return false;
 		}
@@ -72,18 +91,22 @@ class Coord {
 		return false;
 	}
 
-	public function distance(self $other) {
-		$dist = static::haversine($this->latitude, $this->longitude, $other->latitude, $other->longitude);
-		return $dist;
+	/**
+	 * distance in meters between 2 coords
+	 * @param Coord $other
+	 * @return float
+	 */
+	public function distance(Coord $other): float {
+		return static::haversine($this->latitude, $this->longitude, $other->latitude, $other->longitude);
 	}
 
 	/**
 	 * get bearing of 2 locatons 0 = north 90=east 180=south 270=west
 	 * FROM self TOWARDS point
-	 * @param point
-	 * @return
+	 * @param Coord $point
+	 * @return float
 	 */
-	public function bearing(self $point) {
+	public function bearing(Coord $point):float {
 		$lat1 = deg2rad($this->latitude);
 		$lon1 = deg2rad($this->longitude);
 
@@ -107,12 +130,11 @@ class Coord {
 
 	/**
 	 * move over a distance with a bearing (0=north 90=east 180=south 270=west)
-	 * @param distance
-	 * @param bearing
-	 * @param mixed $distance
-	 * @param mixed $bearing
+	 * @param float $distance
+	 * @param float $bearing
+	 * @return Coord
 	 */
-	public function move($distance, $bearing) {
+	public function move(float $distance, float $bearing):Coord {
 		$bearRadians = deg2rad($bearing);
 		$distRadians = $distance / (6372797.6); // earth radius in meters
 
@@ -128,28 +150,23 @@ class Coord {
 		return $this;
 	}
 
-	private function strToFloat($str) {
-		// allow 1,5 and 1.5
-		$val = str_replace(',', '.', (string) $str);
-		if (!preg_match('/[0-9.]*/', $val)) {
-			return null;
-		}
 
-		return floatval($val);
-	}
-
+	/////////////////////////////////////////////////////////////////////////////////////////
+	/// STATIC
+	/////////////////////////////////////////////////////////////////////////////////////////
+	const R = 6372.8; // In kilometers
 	/**
 	 * distance between two lat/lng in meters
 	 * not needed: Latlng float distanceTo (Location dest)
 	 * float[] results = new float[1];
 	 * Location.distanceBetween(1, 2, 2 , 2, results);
-	 * @param lat1
-	 * @param lon1
-	 * @param lat2
-	 * @param lon2
+	 * @param float $lat1
+	 * @param float $lon1
+	 * @param float $lat2
+	 * @param float $lon2
+	 * @return float
 	 */
-	const R = 6372.8; // In kilometers
-	public static function haversine($lat1, $lon1, $lat2, $lon2) {
+	public static function haversine(float $lat1, float $lon1, float $lat2, float $lon2):float {
 		$dLat = deg2rad($lat2 - $lat1);
 		$dLon = deg2rad($lon2 - $lon1);
 		$lat1 = deg2rad($lat1);
@@ -159,5 +176,18 @@ class Coord {
 		$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
 		return 1000.0 * static::R * $c;
+	}
+
+
+	/////////////////////////////////////////////////////////////////////////////////////////
+	/// private parts
+	/////////////////////////////////////////////////////////////////////////////////////////
+	private function strToFloat($str): ?float {
+		// allow 1,5 and 1.5
+		$val = str_replace(',', '.', (string) $str);
+		if (!preg_match('/[0-9.]*/', $val)) {
+			return null;
+		}
+		return floatval($val);
 	}
 }
