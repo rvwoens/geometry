@@ -55,4 +55,14 @@ class CoordsTest extends TestCase
 		$this->assertEquals($p4->latitude, 52.67363418863339, 'move error', 0.001);
 		$this->assertEquals($p4->longitude, 6.280233289986495, 'move error', 0.001);
 	}
+
+	public function testRound() {
+		$p1 = new Coord(52.773767, 6.180272);
+		$p2 = new Coord(52.773767499999, 6.180272499999);
+		$dist = $p1->distance($p2);
+		$this->assertEqualsWithDelta(0.05, $dist, 0.02);
+		$p2->round();
+		$dist = $p1->distance($p2);
+		$this->assertEqualsWithDelta(0, $dist, 0.00001);
+	}
 }

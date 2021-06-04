@@ -100,7 +100,7 @@ class Polygon {
 	}
 
 	/**
-	 * size as defined by the number of vertics
+	 * size as defined by the number of nodes
 	 * @return int
 	 */
 	public function size() {
@@ -140,7 +140,7 @@ class Polygon {
 	}
 
 	/**
-	 * Format into a GeoJson structure (not a json string, but a php array)
+	 * Format into a GeoJson structure (not a json string, but the php array version)
 	 * @return array - php array representing the geoJson structure
 	 */
 	public function polyGeoJsonArray() {
@@ -186,6 +186,14 @@ class Polygon {
 	}
 
 	/**
+	 * simple clone
+	 * @return Polygon
+	 */
+	public function clone() {
+		return clone $this;
+	}
+
+	/**
 	 * Two polygons are equal when each vertex is within approx 10 cm
 	 * @param $other
 	 * @return bool
@@ -228,6 +236,51 @@ class Polygon {
 		return $contains;
 	}
 
+	/**
+	 * closest distance in meters. If point inside polygon, 0 is returned
+	 * @param Coord $point
+	 * @return float
+	 */
+	public function distanceToPoint(Coord $point): float {
+		if ($this->contains($point))
+			return 0.0;
+		$rv = INF;
+		// get the min distance between the point and each polygon point
+		foreach ($this->poly as $pI) {
+			$dist = $point->distance($pI);
+			if ($dist < $rv) {
+				$rv = $dist;
+			}
+		}
+		return $rv;
+	}
+
+	/**
+	 * closest distance in meters. Determine the outer radiuses and return the nearest distance
+	 * for overlapping polygons the distance is 0.
+	 * @param Coord $point
+	 * @return float
+	 */
+	public function distanceToPolygon(Polygon $other): float {
+		$centerDistance = $this->center()->distance($other->center());
+		$centerDistance -= $this->smallestOuterCircleRadius();
+		$centerDistance -= $other->smallestOuterCircleRadius();
+		return $centerDistance<0 ? 0 : $centerDistance;
+	}
+
+	/**
+	 * Shorthand to calculate the closest distance to any Geometric object
+	 * @param mixed $polyOrCoord
+	 * @throws Exception
+	 * @return float
+	 */
+	public function distance($polyOrCoord) {
+		if (is_object($polyOrCoord) && $polyOrCoord instanceof Coord)
+			return $this->distanceToPoint($polyOrCoord);
+		if (is_object($polyOrCoord) && $polyOrCoord instanceof Polygon)
+			return $this->distanceToPolygon($polyOrCoord);
+		throw new Exception("Cant calculate the distance of this value");
+	}
 	/**
 	 * Signed area of polygon in square 100m2 (needed for center) (can be negative dep. on CW / CCW )
 	 * Note: 1 lat/long degree is about 100km. So the result is in square 100km. Use ringarea to get meters
@@ -365,7 +418,6 @@ class Polygon {
 
 	/**
 	 * Factory to get an expanded new polygon by expand meters in all directions outwards (positive by)
-	 * @param expand
 	 * @param mixed $expand
 	 * @return
 	 */
@@ -385,6 +437,24 @@ class Polygon {
 		}
 
 		return new self($expandedPoly);
+	}
+
+	/**
+	 * Factory to get an new polygon by moving the polygon a number of meters in a direction
+	 * @param $distance
+	 * @param $bearing
+	 * @throws Exception
+	 * @return Polygon
+	 */
+	public function movedClone($distance, $bearing): Polygon {
+		$movedPoly = [];
+
+		for ($i = 0; $i < count($this->poly); $i++) {
+			$newPoint = $this->poly[$i]->movedClone($distance, $bearing);         // make a COPY and move
+			$movedPoly[] = $newPoint;
+		}
+
+		return new self($movedPoly);
 	}
 
 	/**

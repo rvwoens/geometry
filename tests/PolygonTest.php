@@ -276,4 +276,30 @@ class PolygonTest extends TestCase
 		$i = new Polygon($ill);
 		$this->assertTrue($i->valid());
 	}
+
+	public function testDistanceToCoord() {
+		$p1 = new Polygon(
+			'52.773351978321,6.180108127987|52.773389299363,6.1804309267635|'.
+			'52.773571452384,6.180429585659|52.773564556135,6.1802386819716|'.
+			'52.773654105861,6.1802271658714|52.773654790414,6.180183718435|'.
+			'52.773770682493,6.1801657519843|52.773763253848,6.1800029462468|'.
+			'52.773636561026,6.1800332595583|52.773547924003,6.1800450960751|'
+		);
+		$c1 = new Coord(52.773351978321, 6.1804309267635);
+		$c1->move(140, 90);	// move x meters to the east
+		$distance = $p1->distanceToPoint($c1);
+		$this->assertEqualsWithDelta(140, $distance, 1, "Distance to coord");
+	}
+	public function testDistanceToPoly() {
+		$p1 = new Polygon(
+			'52.773351978321,6.180108127987|52.773389299363,6.1804309267635|'.
+			'52.773571452384,6.180429585659|52.773564556135,6.1802386819716|'.
+			'52.773654105861,6.1802271658714|52.773654790414,6.180183718435|'.
+			'52.773770682493,6.1801657519843|52.773763253848,6.1800029462468|'.
+			'52.773636561026,6.1800332595583|52.773547924003,6.1800450960751|'
+		);
+		$p2 = $p1->movedClone(140, 90);				// move x meters to the east
+		$distance = $p1->distanceToPolygon($p2);	// less than 140 as we compare the east size of p1 to the west side of p2
+		$this->assertEqualsWithDelta(80, $distance, 5, "Distance to coord");
+	}
 }

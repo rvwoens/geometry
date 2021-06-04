@@ -27,6 +27,20 @@ class Coord {
 		$this->longitude = $lon;
 	}
 
+	/**
+	 * Round the coordinate to a number of digits precision
+	 * 6 = about 0.1 m
+	 * 5 = about 1 m
+	 * 4 = about 10 m
+	 * 3 = about 100 m
+	 * 2 = about 1km
+	 * @param int $precision
+	 */
+	public function round($precision=6) {
+		$this->latitude=round($this->latitude, $precision);
+		$this->longitude=round($this->longitude, $precision);
+	}
+
 	public function clone() {
 		return new static($this->latitude, $this->longitude);
 	}
@@ -92,7 +106,7 @@ class Coord {
 	}
 
 	/**
-	 * move over a distance with a bearing
+	 * move over a distance with a bearing (0=north 90=east 180=south 270=west)
 	 * @param distance
 	 * @param bearing
 	 * @param mixed $distance
