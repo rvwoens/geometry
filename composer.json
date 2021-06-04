@@ -3,7 +3,7 @@
     "description": "Geometry 2D shapes helper functions",
     "type": "library",
     "require": {
-        "php": "^7.1",
+        "php": "^7.1|^8.0",
         "phpmd/phpmd": "^2.8"
     },
     "require-dev": {
