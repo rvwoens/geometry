@@ -141,9 +141,10 @@ class Polygon {
 
 	/**
 	 * Format into a GeoJson structure (not a json string, but the php array version)
+	 * @param mixed $properties
 	 * @return array - php array representing the geoJson structure
 	 */
-	public function polyGeoJsonArray(): array {
+	public function polyGeoJsonArray($properties=[]): array {
 		$coords = [];
 		foreach ($this->poly as $coord) {
 			$coords[] = [floatval($coord->longitude), floatval($coord->latitude)];
@@ -156,7 +157,7 @@ class Polygon {
 					'type' => 'Polygon',
 					'coordinates' => [$coords],
 			],
-			'properties' => [],
+			'properties' => $properties,
 		];
 
 		return $rv;
@@ -165,10 +166,11 @@ class Polygon {
 	/**
 	 * Convert to a GeoJson string. Option for pretty-printing the string repr.
 	 * @param bool $pretty
+	 * @param mixed $properties
 	 * @return false|string
 	 */
-	public function polyGeoJsonString(bool $pretty = false) {
-		return json_encode($this->polyGeoJsonArray(), $pretty ? JSON_PRETTY_PRINT : 0);
+	public function polyGeoJsonString(bool $pretty = false, $properties=[]) {
+		return json_encode($this->polyGeoJsonArray($properties), $pretty ? JSON_PRETTY_PRINT : 0);
 	}
 
 	/**
