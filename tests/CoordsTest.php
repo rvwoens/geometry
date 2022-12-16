@@ -65,4 +65,44 @@ class CoordsTest extends TestCase
 		$dist = $p1->distance($p2);
 		$this->assertEqualsWithDelta(0, $dist, 0.00001);
 	}
+
+	public function testRd() {
+		// RD: X=228638 = longitude  Y=619487 = latitude
+		$p1= new Coord(619487, 228638);  // northest part of NL
+		$this->assertTrue($p1->isRDcoord());
+		$p2 = $p1->makeWGS84fromRD();
+		echo "\nRD $p1->latitude,$p1->longitude WGS $p2->latitude,$p2->longitude\n";
+		$this->assertEqualsWithDelta(6.49835, $p2->longitude, 1E-5);
+		$this->assertEqualsWithDelta(53.55632, $p2->latitude, 1E-5);
+
+		// RD: Y = latitude X = longitude
+		//              lat    lng
+		$p1= new Coord(463000, 155000);  // referentiepunt RD
+		$this->assertTrue($p1->isRDcoord());
+		$p2 = $p1->makeWGS84fromRD();
+		// should be 52.15517, 5.38721
+		echo "\nRD $p1->latitude,$p1->longitude WGS $p2->latitude,$p2->longitude\n";
+		$this->assertEqualsWithDelta(5.38721, $p2->longitude, 1E-5);
+		$this->assertEqualsWithDelta(52.15517, $p2->latitude, 1E-5);
+
+		// RD: Y = latitude X = longitude
+		//              lat    lng
+		$p1= new Coord(317985, 176395);  // centrum maastricht
+		$this->assertTrue($p1->isRDcoord());
+		$p2 = $p1->makeWGS84fromRD();
+		// should be 50.851302, 5.690996
+		echo "\nRD $p1->latitude,$p1->longitude WGS $p2->latitude,$p2->longitude\n";
+		$this->assertEqualsWithDelta(5.690996, $p2->longitude, 1E-5);
+		$this->assertEqualsWithDelta(50.851302, $p2->latitude, 1E-5);
+
+		// RD: Y = latitude X = longitude
+		//              lat    lng
+		$p1= new Coord(377338, 17227);  // cadzand
+		$this->assertTrue($p1->isRDcoord());
+		$p2 = $p1->makeWGS84fromRD();
+		// should be 51.368415, 3.408606
+		echo "\nRD $p1->latitude,$p1->longitude WGS $p2->latitude,$p2->longitude\n";
+		$this->assertEqualsWithDelta(3.408606, $p2->longitude, 1E-5);
+		$this->assertEqualsWithDelta(51.368415, $p2->latitude, 1E-5);
+	}
 }

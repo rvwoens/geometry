@@ -1,5 +1,7 @@
 <?php namespace Rvwoens\Geometry;
 
+use Exception as Exception;
+
 /**
  * a basic coordinate with latitude and longitude only
  * @author rvw
@@ -151,6 +153,78 @@ class Coord {
 	}
 
 
+	public function isRDcoord() {
+		// https://www.javawa.nl/coords.html
+		// longitude=X=westeast latitude=Y=northsouth
+		// kleinste NL waarde voor X = 14312
+		// grootste NL waarde voor X = 277863
+		// kleinste NL waarde voor Y = 306840
+		// grootste NL waarde voor Y = 619487
+
+		return $this->longitude>14000 && $this->longitude<300000 &&
+			$this->latitude>300000 && $this->latitude<650000;
+	}
+
+	/**
+	 * Convert a RD (Rijksdriehoek) coordinate to WGS84
+	 * @throws Exception
+	 * @return Coord
+	 */
+	public function makeWGS84fromRD(): Coord {
+		if (!$this->isRDcoord())
+			throw new Exception("Coord is not in RD (Rijksdriehoeksmeting) format");
+
+		$x0 = 155E3;
+		$y0 = 463E3;
+		$lat0 = 52.1551744;
+		$lng0 = 5.38720621;
+		$latpqK = [];
+		for ($i = 1; $i < 12; $i++)
+			$latpqK[$i] = [];
+		$latpqK[1]=["p"=> 0, "q"=> 1, "K"=>3235.65389];
+		$latpqK[2]=['p'=> 2, "q"=> 0, "K"=> -32.58297];
+		$latpqK[3]=['p'=> 0, "q"=> 2, "K"=> -0.2475];
+		$latpqK[4]=['p'=> 2, "q"=> 1, "K"=> -0.84978];
+		$latpqK[5]=['p'=> 0, "q"=> 3, "K"=> -0.0665];
+		$latpqK[6]=['p'=> 2, "q"=> 2, "K"=> -0.01709];
+		$latpqK[7]=['p'=> 1, "q"=> 0, "K"=> -0.00738];
+		$latpqK[8]=['p'=> 4, "q"=> 0, "K"=> 0.0053];
+		$latpqK[9]=['p'=> 2, "q"=> 3, "K"=> -3.9E-4];
+		$latpqK[10]=['p'=>4, "q"=> 1, "K"=> 3.3E-4];
+		$latpqK[11]=['p'=>1, "q"=> 1, "K"=> -1.2E-4];
+		$lngpqL = [];
+		for ($i = 1; $i < 13; $i++)
+			$lngpqL[$i] = [];
+		$lngpqL[1]=["p"=> 1, "q"=>0, "K" => 5260.52916];
+		$lngpqL[2]=["p"=> 1, "q"=>1, "K"=>105.94684];
+		$lngpqL[3]=["p"=> 1, "q"=>2, "K"=>2.45656];
+		$lngpqL[4]=["p"=> 3, "q"=>0, "K"=>-0.81885];
+		$lngpqL[5]=["p"=> 1, "q"=>3, "K"=>0.05594];
+		$lngpqL[6]=["p"=> 3, "q"=>1, "K"=>-0.05607];
+		$lngpqL[7]=["p"=> 0, "q"=>1, "K"=>0.01199];
+		$lngpqL[8]=["p"=> 3, "q"=>2, "K"=>-0.00256];
+		$lngpqL[9]=["p"=> 1, "q"=>4, "K"=>0.00128];
+		$lngpqL[10]=["p"=>0, "q"=>2, "K"=> 2.2E-4];
+		$lngpqL[11]=["p"=>2, "q"=>0, "K"=> -2.2E-4];
+		$lngpqL[12]=["p"=>5, "q"=>0, "K"=> 2.6E-4];
+
+		$a = 0;
+		// longitude=X=westeast latitude=Y=northsouth
+		$dX = 1E-5 * ($this->longitude - $x0);  // X
+		$dY = 1E-5 * ($this->latitude - $y0);   // Y
+		for ($i = 1; 12 > $i; $i++)
+			$a += $latpqK[$i]['K'] * pow($dX, $latpqK[$i]['p']) * pow($dY, $latpqK[$i]['q']);
+		$newlat= $lat0 + $a / 3600;
+
+		$a = 0;
+		$dX = 1E-5 * ($this->longitude - $x0);
+		$dY = 1E-5 * ($this->latitude - $y0);
+		for ($i = 1; 13 > $i; $i++)
+			$a += $lngpqL[$i]['K'] * pow($dX, $lngpqL[$i]['p']) * pow($dY, $lngpqL[$i]['q']);
+		$newlng= $lng0 + $a / 3600;
+		return new self($newlat, $newlng);
+	}
+
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/// STATIC
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -190,4 +264,6 @@ class Coord {
 		}
 		return floatval($val);
 	}
+
+
 }
