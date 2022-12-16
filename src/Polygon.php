@@ -442,6 +442,53 @@ class Polygon {
 	}
 
 	/**
+	 * Combine this and a second polygon into a combined polygon
+	 * The combination is made by connecting the 2 closest points of the polygon
+	 * @param Polygon $p
+	 * @throws Exception
+	 * @return Polygon|null
+	 */
+	public function makeCombined(Polygon $p):?Polygon {
+		if (!$p->valid() && !$this->valid())
+			throw new Exception("makeCombined needs a valid polygon");
+		if (!$p->valid())
+			return new self($this);
+		if (!$this->valid())
+			return new self($p);
+		// both polygons are valid
+		// search 2 closest points
+		$mindistance=9999999;
+		$thisinject=0;
+		$addinject=0;
+		for ($i = 0; $i < count($this->poly); $i++) {
+			for ($j = 0; $j < count($p->poly); $j++) {
+				$dist=$this->poly[$i]->distance($p->poly[$j]);
+				if ($dist<$mindistance) {
+					$mindistance = $dist;
+					$thisinject = $i;
+					$addinject = $j;
+				}
+			}
+		}
+		if ($mindistance==9999999) {
+			throw new Exception("makeCombined can't find closest points");
+		}
+		$result=[];
+		// first part of buf
+		for ($i2=0; $i2<=$thisinject; $i2++)
+			$result[]=$this->poly[$i2];
+		// now last part of p
+		for ($j2=$addinject; $j2<$p->size(); $j2++)
+			$result[]=$p->poly[$j2];
+		// now first part of p
+		for ($j3=0; $j3<=$addinject; $j3++)
+			$result[]=$p->poly[$j3];
+		// now last part of buf
+		for ($i3=$thisinject; $i3<$this->size(); $i3++)
+			$result[]=$this->poly[$i3];
+		return new self($result);
+	}
+	/**
 	 * Factory to get an new polygon by moving the polygon a number of meters in a direction
 	 * @param $distance
 	 * @param $bearing

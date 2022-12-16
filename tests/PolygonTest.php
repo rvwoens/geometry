@@ -302,4 +302,34 @@ class PolygonTest extends TestCase
 		$distance = $p1->distanceToPolygon($p2);	// less than 140 as we compare the east size of p1 to the west side of p2
 		$this->assertEqualsWithDelta(80, $distance, 5, "Distance to coord");
 	}
+
+	public function testCombine() {
+		//       g
+		// 5   +--+
+		// 4   | b| f    Clockwise
+		// 3  c|  +--+
+		// 2   |  a  | d
+		// 1   +-----+
+		// |        e
+		// |---1--2--3--->
+		$hf = new Polygon('1,1|1,5|2,5|2,3|3,3|3,1|');
+		//
+		// 3            +--+   Clockwise
+		// 2            |  |
+		// 1            +--+
+		// |---1--2--3--4--5->
+		$add = new Polygon('4,1|4,3|5,3|5,1|');
+		$combi = $hf->makeCombined($add);
+		$combistr=$combi->polyString();
+		//       g
+		// 5   +--+
+		// 4   | b| f
+		// 3  c|  +--+===+---+
+		// 2   |  a  |   |   |
+		// 1   +-----+   +---+
+		// |        e
+		// |---1--2--3---4---5>
+		$this->assertEquals('1.000000,1.000000|1.000000,5.000000|2.000000,5.000000|2.000000,3.000000|3.000000,3.000000|4.000000,3.000000|'.
+							'5.000000,3.000000|5.000000,1.000000|4.000000,1.000000|4.000000,3.000000|3.000000,3.000000|3.000000,1.000000|', $combistr);
+	}
 }
