@@ -75,6 +75,14 @@ class CoordsTest extends TestCase
 		$this->assertEqualsWithDelta(6.49835, $p2->longitude, 1E-5);
 		$this->assertEqualsWithDelta(53.55632, $p2->latitude, 1E-5);
 
+		// RD: X=228638 = longitude  Y=619487 = latitude
+		$p1= new Coord(228638, 619487);  // northest part of NL.. X/Y mixed
+		$this->assertTrue($p1->isRDcoord());
+		$p2 = $p1->makeWGS84fromRD();
+		echo "\nRD $p1->latitude,$p1->longitude WGS $p2->latitude,$p2->longitude\n";
+		$this->assertEqualsWithDelta(6.49835, $p2->longitude, 1E-5);
+		$this->assertEqualsWithDelta(53.55632, $p2->latitude, 1E-5);
+
 		// RD: Y = latitude X = longitude
 		//              lat    lng
 		$p1= new Coord(463000, 155000);  // referentiepunt RD
