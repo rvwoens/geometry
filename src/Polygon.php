@@ -441,6 +441,18 @@ class Polygon {
 		return new self($expandedPoly);
 	}
 
+	public function isRdPolygon():bool {
+		return $this->valid() && $this->poly[0]->isRDcoord();
+	}
+	public function makeWgsFromRd():?Polygon {
+		if (!$this->isRdPolygon())
+			throw new Exception("makeWGS needs a valid RD polygon");
+		$result=[];
+		foreach ($this->poly as $pI) {
+			$result[] = $pI->makeWGS84fromRD();
+		}
+		return new self($result);
+	}
 	/**
 	 * Combine this and a second polygon into a combined polygon
 	 * The combination is made by connecting the 2 closest points of the polygon

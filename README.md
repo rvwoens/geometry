@@ -26,6 +26,8 @@ equals($coord2)                         - a coord is equal when within a millime
 distance($coord3)                       - calculate distance between coords in meters
 bearing($coordTo)                       - Bearing (degrees) between 2 coords (vector TOWARDS coordTo, 0=north)
 move($distance,$bearing);               - move of coord (use movedclone for immutable variant)
+isRDcoord()                             - true if the coord is a RD (dutch: Rijksdriehoeksmeting) coordinate
+makeWGS84fromRD()                       - Factory to create a converted Wgs84 coordinate from a RD coordiante
 ```
 
 ### Polygon
@@ -68,6 +70,7 @@ largestInnerCircleRadius()      - calculate the smallest inner circle (simple ve
 expand(10)                      - create an expanded (inflated) polygon by x meters (negative values will deflate the polygon)
 movedClone($distance,$bearing)  - create a moved copy of the polygon
 simplify($distance,$highQuality)- create a simplified polygon by removing coordinates but keeping shape
+makeCombined(Polygon $add)      - add a polygon, create a connection between both (for converting multipolygons)
 ```
 
 
