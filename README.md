@@ -71,6 +71,8 @@ expand(10)                      - create an expanded (inflated) polygon by x met
 movedClone($distance,$bearing)  - create a moved copy of the polygon
 simplify($distance,$highQuality)- create a simplified polygon by removing coordinates but keeping shape
 makeCombined(Polygon $add)      - add a polygon, create a connection between both (for converting multipolygons)
+makeWgsFromRd()                 - convert polygon to Wgs84
+
 ```
 
 

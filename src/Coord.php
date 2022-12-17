@@ -160,9 +160,10 @@ class Coord {
 		// grootste NL waarde voor X = 277863
 		// kleinste NL waarde voor Y = 306840
 		// grootste NL waarde voor Y = 619487
-
-		return $this->longitude>14000 && $this->longitude<300000 &&
-			$this->latitude>300000 && $this->latitude<650000;
+		// X,Y can be either Lat or Long
+		return ($this->longitude>14000 && $this->longitude<300000 && $this->latitude>300000 && $this->latitude<650000) ||
+				($this->latitude>14000 && $this->latitude<300000 && $this->longitude>300000 && $this->longitude<650000)
+			;
 	}
 
 	/**
@@ -173,7 +174,14 @@ class Coord {
 	public function makeWGS84fromRD(): Coord {
 		if (!$this->isRDcoord())
 			throw new Exception("Coord is not in RD (Rijksdriehoeksmeting) format");
-
+		if ($this->longitude<$this->latitude) {
+			$x=$this->longitude;
+			$y=$this->latitude;
+		}
+		else {
+			$x=$this->latitude;
+			$y=$this->longitude;
+		}
 		$x0 = 155E3;
 		$y0 = 463E3;
 		$lat0 = 52.1551744;
@@ -210,15 +218,15 @@ class Coord {
 
 		$a = 0;
 		// longitude=X=westeast latitude=Y=northsouth
-		$dX = 1E-5 * ($this->longitude - $x0);  // X
-		$dY = 1E-5 * ($this->latitude - $y0);   // Y
+		$dX = 1E-5 * ($x - $x0);  // X
+		$dY = 1E-5 * ($y - $y0);   // Y
 		for ($i = 1; 12 > $i; $i++)
 			$a += $latpqK[$i]['K'] * pow($dX, $latpqK[$i]['p']) * pow($dY, $latpqK[$i]['q']);
 		$newlat= $lat0 + $a / 3600;
 
 		$a = 0;
-		$dX = 1E-5 * ($this->longitude - $x0);
-		$dY = 1E-5 * ($this->latitude - $y0);
+		$dX = 1E-5 * ($x - $x0);
+		$dY = 1E-5 * ($y - $y0);
 		for ($i = 1; 13 > $i; $i++)
 			$a += $lngpqL[$i]['K'] * pow($dX, $lngpqL[$i]['p']) * pow($dY, $lngpqL[$i]['q']);
 		$newlng= $lng0 + $a / 3600;
