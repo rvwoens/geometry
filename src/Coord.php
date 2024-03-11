@@ -102,6 +102,17 @@ class Coord {
 		return static::haversine($this->latitude, $this->longitude, $other->latitude, $other->longitude);
 	}
 
+    /**
+     * simpler (faster) distance (not in meters)
+     * @param Coord $other
+     * @return float
+     */
+    public function simpleDistance(Coord $other): float {
+        $dx=abs($this->latitude-$other->latitude);
+        $dy=abs($this->longitude-$other->longitude);
+        return sqrt($dx*$dx+$dy*$dy);
+    }
+
 	/**
 	 * get bearing of 2 locatons 0 = north 90=east 180=south 270=west
 	 * FROM self TOWARDS point

@@ -11,17 +11,20 @@ use Exception;
  * @since 20-04-2020.
  */
 class Polygon {
+
 	private $poly;   // smallest poly is a triangle!
+
 
 	/**
 	 * Polygon constructor.
 	 *
 	 * simple polygon [ [4,5], [4,6] ..], coords polygon [ Coord, Coord ..] or latlng polygon [ ['lat'=>5, 'lng'=>1],.. ] or string "4,5|5,6|..."
 	 * @param mixed $poly
+	 * @param bool $autoLatLngOrder - of true check lat/long vs long/lat order
 	 *
 	 * @throws Exception
 	 */
-	public function __construct($poly) {
+	public function __construct($poly, $autoLatLngOrder=true) {
 		$this->poly = [];
 		if (is_array($poly)) {
 			if (count($poly) < 3) {
@@ -40,12 +43,18 @@ class Polygon {
 				}
 			}
 			elseif (is_array($analyse) && count($analyse) == 2) {
-				// array of [ [lat,lng][lat,lng] ]
-				// or is it lng,lat
-				$test = $poly[0];
-				$llorder = 'latlon';
-				if ($test[0] < 10 && $test[1] > 30) {
-					$llorder = 'lonlat';
+				if ($autoLatLngOrder) {
+					// array of [ [lat,lng][lat,lng] ]
+					// or is it lng,lat
+					$test = $poly[0];
+					$llorder = 'latlon';
+					// lon <10 lat>30 is lonlat
+					if ($test[0] < 10 && $test[1] > 30) {
+						$llorder = 'lonlat';
+					}
+				}
+				else {
+					$llorder='lonlat';	// fixed order: Lon then Lat
 				}
 				foreach ($poly as $coord) {
 					if ($llorder == 'lonlat') {
