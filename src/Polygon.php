@@ -42,7 +42,8 @@ class Polygon {
 					$this->poly[] = new Coord($coord['lat'], $coord['lng']);
 				}
 			}
-			elseif (is_array($analyse) && count($analyse) == 2) {
+			// might have a third attribute: height. So count should be 2 or 3
+			elseif (is_array($analyse) && in_array(count($analyse),[2,3]) ) {
 				if ($autoLatLngOrder) {
 					// array of [ [lat,lng][lat,lng] ]
 					// or is it lng,lat
