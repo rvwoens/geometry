@@ -76,15 +76,16 @@ class PolygonTest extends TestCase
 		);
 		// something like 28.92 meters
 		$radius = $p1->smallestOuterCircleRadius();
-		$this->assertEquals(28.92, $radius, 'outercircle', 0.1);
+		$this->assertEqualsWithDelta(28.92, $radius, 0.1, 'outercircle');
 	}
 
 	public function testInnercircle_isCorrect() {
 		$p1 = new Polygon('52,6|52.001,6|52.001,6.001|52,6.001|');
 		$radius = $p1->largestInnerCircleRadius();
 		$center = $p1->center();
-		$this->assertEquals($center, new Coord(52.0005, 6.0005), 'inner', 0.001); // xCode calculated value
-		$this->assertEquals(65.38, $radius, 'inner', 0.1);
+		$this->assertEqualsWithDelta(52.0005, $center->latitude, 0.001, 'inner');
+		$this->assertEqualsWithDelta(6.0005, $center->longitude, 0.001, 'inner');
+		$this->assertEqualsWithDelta(65.38, $radius, 0.1, 'inner');
 	}
 
 	public function testExpand() {
@@ -97,8 +98,8 @@ class PolygonTest extends TestCase
 		);
 		$p2 = $p1->expand(1);
 		$radius = $p2->smallestOuterCircleRadius();
-		$this->assertEquals(30.0, $radius, 'e4xpand', 0.1);
-
+		$this->assertEqualsWithDelta(30.0, $radius, 0.1, 'expand');
+	
 		$p3 = new Polygon('1,1|1.00001,1|1.00001,1.00001|1,1.00001|');
 		$p4 = $p3->expand(1);
 		$this->assertEquals($p4->polyString(), '0.999994,0.999994|1.000016,0.999994|1.000016,1.000016|0.999994,1.000016|');
@@ -216,7 +217,7 @@ class PolygonTest extends TestCase
 			'52.773636561026,6.1800332595583|52.773547924003,6.1800450960751|'
 		);
 		$area = $hf->areaSquareMeters();
-		$this->assertEquals(794.45, $area, 'voortuinarea', 0.1);
+		$this->assertEqualsWithDelta(794.45, $area, 0.1, 'voortuinarea');
 
 		// test: paste into geojson.io -> 794.45m2
 		//echo "\n\n".$hf->polyGeoJsonString()."\n";
