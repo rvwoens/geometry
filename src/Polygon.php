@@ -469,6 +469,8 @@ class Polygon {
 	 * @param Polygon $p
 	 * @throws Exception
 	 * @return Polygon|null
+	 * 
+	 * @SuppressWarnings(PHPMD.NPathComplexity)
 	 */
 	public function makeCombined(Polygon $p):?Polygon {
 		if (!$p->valid() && !$this->valid())
